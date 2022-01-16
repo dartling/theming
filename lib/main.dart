@@ -13,6 +13,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Theming Tutorial',
       theme: FlexThemeData.light(scheme: FlexScheme.hippieBlue),
+      darkTheme: FlexThemeData.dark(
+        scheme: FlexScheme.hippieBlue,
+        darkIsTrueBlack: true,
+      ),
+      themeMode: ThemeMode.dark,
       home: const MyHomePage(),
     );
   }
