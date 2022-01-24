@@ -1,41 +1,41 @@
-import 'package:flex_color_scheme/flex_color_scheme.dart';
 import 'package:flutter/material.dart';
+import 'package:theming/app_theme.dart';
+import 'package:theming/theme_option.dart';
 
 void main() {
   // This could be loaded from storage e.g. with `shared_preferences`
-  const themeMode = ThemeMode.system;
-  runApp(MyApp(theme: themeMode));
+  const themeOption = ThemeOption.system;
+  runApp(MyApp(themeOption: themeOption));
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key, required ThemeMode theme})
-      : _themeNotifier = ValueNotifier(theme),
+  MyApp({Key? key, required ThemeOption themeOption})
+      : _themeNotifier = ValueNotifier(themeOption),
         super(key: key);
 
-  final ValueNotifier<ThemeMode> _themeNotifier;
+  final ValueNotifier<ThemeOption> _themeNotifier;
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<ThemeMode>(
+    return ValueListenableBuilder<ThemeOption>(
       valueListenable: _themeNotifier,
       child: MyHomePage(onThemeUpdate: onThemeUpdate),
-      builder: (context, theme, child) {
+      builder: (context, themeOption, child) {
         return MaterialApp(
           title: 'Theming Tutorial',
-          theme: FlexThemeData.light(scheme: FlexScheme.hippieBlue),
-          darkTheme: FlexThemeData.dark(
-            scheme: FlexScheme.hippieBlue,
-            darkIsTrueBlack: true,
-          ),
-          themeMode: theme,
+          theme: AppTheme.light,
+          darkTheme: themeOption == ThemeOption.trueBlack
+              ? AppTheme.trueBlack
+              : AppTheme.dark,
+          themeMode: themeOption.themeMode,
           home: child,
         );
       },
     );
   }
 
-  void onThemeUpdate(ThemeMode themeMode) {
-    _themeNotifier.value = themeMode;
+  void onThemeUpdate(ThemeOption themeOption) {
+    _themeNotifier.value = themeOption;
   }
 }
 
@@ -45,7 +45,7 @@ class MyHomePage extends StatefulWidget {
         super(key: key);
 
   final String title;
-  final Function(ThemeMode) onThemeUpdate;
+  final Function(ThemeOption) onThemeUpdate;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -101,8 +101,8 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<ThemeMode?> _showThemePicker() {
-    return showModalBottomSheet<ThemeMode>(
+  Future<ThemeOption?> _showThemePicker() {
+    return showModalBottomSheet<ThemeOption>(
       context: context,
       builder: (context) {
         return SafeArea(
@@ -113,21 +113,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 title: const Text('Light'),
                 leading: const Icon(Icons.brightness_7_outlined),
                 onTap: () {
-                  Navigator.pop(context, ThemeMode.light);
+                  Navigator.pop(context, ThemeOption.light);
                 },
               ),
               ListTile(
                 title: const Text('Dark'),
                 leading: const Icon(Icons.brightness_2_outlined),
                 onTap: () {
-                  Navigator.pop(context, ThemeMode.dark);
+                  Navigator.pop(context, ThemeOption.dark);
+                },
+              ),
+              ListTile(
+                title: const Text('True black'),
+                leading: const Icon(Icons.brightness_1_outlined),
+                onTap: () {
+                  Navigator.pop(context, ThemeOption.trueBlack);
                 },
               ),
               ListTile(
                 title: const Text('System'),
                 leading: const Icon(Icons.settings_outlined),
                 onTap: () {
-                  Navigator.pop(context, ThemeMode.system);
+                  Navigator.pop(context, ThemeOption.system);
                 },
               ),
             ],
